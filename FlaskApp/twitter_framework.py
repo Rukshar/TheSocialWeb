@@ -34,6 +34,6 @@ def get_geo_location(user_location):
 def extract_tweets(query):
 	statuses = retrieve_tweets(query)
 	result = [{'location':get_geo_location(status['user']['location']), 
-			   'message':status['text']} for status in statuses]
+			   'message':status['text'], 'timestamp':status['created_at']} for status in statuses]
 
 	return result

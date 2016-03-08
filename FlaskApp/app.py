@@ -55,6 +55,7 @@ def generate_marker_js(lat, lng, query, message):
 # Find the geo locations and messages from the tweets and send them to the client
 def place_markers(index, query='#SaySomethingGoodAboutTwitter'):
     tweets = twitter_framework.extract_tweets(query)
+    print tweets[0]
 
     marker_scripts_list = [generate_marker_js(tweet['location'][0], tweet['location'][1], query, tweet['message']) for tweet in tweets if tweet['location'] != None]
     marker_script = '\n'.join(marker_scripts_list)
