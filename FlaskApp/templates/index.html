@@ -80,11 +80,13 @@
         <div class="header">
             <h1><center> Comparing popularity in tweets on the same news subject in different countries </center></h1>
         </div>
-
+ <form method="post" action="query"><label for="query">Please enter a query:</label><input type="text" name="query" /><input type="submit" />
+ 
+ Current query: <!--Current query-->
         <div class="row">
             <div class="col-md-10">
                 <div id="map"></div>
-
+				
                 <script>
                     function initMap() 
                     {
