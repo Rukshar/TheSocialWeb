@@ -50,7 +50,7 @@ def generate_marker_js(lat, lng, query, message):
             });
             marker_%d.addListener('click', function() {
             infowindow_%d.open(map, marker_%d);
-            }); """ % (rand, query, message, rand, rand, rand, lat, lng, query, rand, rand, rand) 
+            });  """ % (rand, query, message, rand, rand, rand, lat, lng, query, rand, rand, rand) 
 
 # Find the geo locations and messages from the tweets and send them to the client
 def place_markers(index, query='#MakeDonaldDrumpfAgain'):
@@ -59,7 +59,18 @@ def place_markers(index, query='#MakeDonaldDrumpfAgain'):
     marker_scripts_list = [generate_marker_js(tweet['location'][0], tweet['location'][1], query, tweet['message']) for tweet in tweets if tweet['location'] != None]
     marker_script = '\n'.join(marker_scripts_list)
 
+    
+    timestamp_list = []
+    for tweet in tweets:
+        if tweet['location'] != None:
+            timestamp_list.append(tweet['timestamp'])
+    allstamps = ""
+    for timestamp in timestamp_list:
+        allstamps += 'timestampArray.push(new Date("'+timestamp+'"));'
+    
     index = index.replace("// place_markers_here", marker_script)
+    index = index.replace("// place_scatterplot_here", allstamps)
+    
     return index
 
 index = place_markers(index)
