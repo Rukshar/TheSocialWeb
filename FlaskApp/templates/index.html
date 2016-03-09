@@ -5,42 +5,84 @@
     <title>Comparing popularity in Tweets</title>
  
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-     
+ 
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <style>
-    #map 
+<script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<style>
+.mapcontainer{
+	padding-right:15px;
+	padding-left:15px;
+	width:1024px;
+	margin-right:auto;
+	margin-left:auto;
+}
+#map 
         {
-            width: 700px;
-            height: 500px;
+            width: 1024px;
+            height: 720px;
         }
-    		
-    	svg
-    	{
-    		width:auto;
-    		height:auto;
-    		margin-left:auto;
-    		margin-right:auto;
-    	}
-    #SVGdiv
-        {
-    		height:auto;
-    		width:100%;
-    	}	
-	</style>
+		
+	svg
+	{
+		width:auto;
+		height:auto;
+		margin-left:auto;
+		margin-right:auto;
+	}
+	#SVGdiv{
+		height:auto;
+		width:100%;
+		margin-top:30px;
+	}	
+	
+	
+	.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  pointer-events: none;
+}
+/* Northward tooltips */
+.d3-tip.n:after {
+  content: "\25BC";
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+  text-align: center;
+}
+
+		</style>
 </head>
  
 <body>
  
-    <div class="container">
+    <div class="mapcontainer">
         <div class="header">
             <h1><center> Comparing popularity in tweets on the same news subject in different countries </center></h1>
         </div>
 
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-10">
                 <div id="map"></div>
 
                 <script>
@@ -49,23 +91,34 @@
                         var mapDiv = document.getElementById('map');
                         var map = new google.maps.Map(mapDiv, 
                         {
-                            center: {lat: 42.4733689, lng: -83.221873},
-                            zoom: 8
+                            center: {lat: 43.761539, lng: -79.411079},
+                            zoom: 2
                         });
-                        
+                        var timestampArray = [];
+						
+						
+						
                         // place_markers_here
+						
+						console.log("Timestamp new: " + timestampArray);
+						console.log("Timestamp 0: " + timestampArray[0]);
+						console.log("Timestamp 1: " + timestampArray[1]);
+						console.log("Timestamp 00: " + timestampArray[0][0]);
+						console.log("Timestamp 01: " + timestampArray[0][1]);
 						// data that you want to plot, I've used separate arrays for x and y values
             //var xdata = [14574467890001, 14575467890001, 14574667890001, 14574767890001],
             //Timestamp: "Tue Mar 08 14:19:49 +0000 2016"
-            var timestampArray = [];
 			
-			// place_scatterplot_here
 			orderedDates = timestampArray.sort(function(a,b){
 			return Date.parse(a) > Date.parse(b);
 			});
-			console.log("Ordered dates: " + orderedDates);
+			console.log("Ordered dates: "+ orderedDates)
+			var xdata = [];
+			for(i=0;i<orderedDates.length;i++){
+				xdata.push(orderedDates[i][0]);
+			}
 			
-			var xdata = orderedDates;
+			console.log("xdata :"+xdata);
 			
 			var ydata = [];
 			for(i=0;i<xdata.length;i++){
@@ -79,8 +132,8 @@
 
             // x and y scales, I've used linear here but there are other options
             // the scales translate data values to pixel values for you
-            var minDate = xdata[0];
-            var maxDate = xdata[xdata.length-1];
+            var maxDate = xdata[0];
+            var minDate = xdata[xdata.length-1];
             var x = d3.time.scale().domain([minDate, maxDate]).range([0, width]);
                     // the pixel range of the x-axis
 
@@ -94,13 +147,14 @@
             .attr('width', width + margin.right + margin.left)
             .attr('height', height + margin.top + margin.bottom)
             .attr('class', 'chart')
+			.attr("align","center");
 
             // the main object where the chart and axis will be drawn
             var main = chart.append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
             .attr('width', width)
             .attr('height', height)
-            .attr('class', 'main')   
+            .attr('class', 'main').attr("align","center");   
 
             // draw the x axis
             var xAxis = d3.svg.axis()
@@ -116,7 +170,15 @@
             var yAxis = d3.svg.axis().tickFormat(function (d) { return ''; })
             .scale(y)
             .orient('left');
-
+	
+	//Tipbox
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0])
+        .html(function(d,i) { return "<strong>Message:</strong> " + orderedDates[i][1] + "<br/><strong>Time:</strong> "+ xdata[i]; });
+		
+    chart.call(tip);
+	
             main.append('g')
             .attr('transform', 'translate(0,0)')
             .attr('class', 'main axis date')
@@ -130,21 +192,36 @@
               .enter().append("svg:circle")  // create a new circle for each value
           .attr("cy", function (d) { return y(d); } ) // translate y value to a pixel
           .attr("cx", function (d,i) { return x(xdata[i]); } ) // translate x value
-          .attr("r", 5) // radius of circle
-          .style("opacity", 0.5); // opacity of circle
+          .attr("r", 8) // radius of circle
+          .style("opacity", 0.5) // opacity of circle
+			.on('mouseover', tip.show)
+			.on('mouseout', tip.hide)
+
+			
+		  
+		  
+		  
+		  ; 
+		  
+
                     }
                 </script>
                 <script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
                 
             </div>
             
-            <div class="col-md-3">
-                <div id="inputform">
-                    <form action="." method="POST">
-                        <input type="text" name="text">
-                        <br /> <br />
-                        <input type="submit" name="my-form" value="Send">
-                    </form>
+            <div class="col-md-2">
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Choose a topic
+                        <span class="caret"></span>
+                    </button>
+    
+                    <ul class="dropdown-menu">
+                        <li><a href="#">#AttacksInParis</a></li>
+                        <li><a href="#">#AttacksInTurkey</a></li>
+                        <li><a href="#">#mornForParis</a></li>
+                        <li><a href="#">#mornForTurkey</a></li>
+                    </ul>
                 </div>
 
             </div>
@@ -153,7 +230,7 @@
  
  
     </div>
-		<div id="SVGwrapper"><div id="SVGdiv"></div></div>
+		<div id="SVGwrapper"><div id="SVGdiv" align="center"></div></div>
         <footer class="footer">
             <p>&copy; Group 21 - The Social Web 2016</p>
         </footer>
