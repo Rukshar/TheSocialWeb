@@ -11,6 +11,9 @@ then run the server again, otherwise you get an error "address already in use" a
 you have to quit Python.
 """
 
+def hashtag():
+    print "Maussaus"
+
 app = Flask(__name__)
 
 # Open the index.html to find the comment that has to be replaced with a script
@@ -76,17 +79,36 @@ def place_markers(index, query='#SaySomethingGoodAboutTwitter'):
     #    allstamps += 'timestampArray.push(new Date("'+timestamp+'"));'
     
     index = index.replace("// place_markers_here", marker_script)
-    #index = index.replace("// place_scatterplot_here", allstamps)
+    index = index.replace(" <!--Current query-->", query)
     
     return index
 
 index = place_markers(index)
 
+def get_query_index(index, query = "#SaySomethingGoodAboutTwitter"):
+    index = place_markers(index, query)
+    return index
+
 # Start server
 @app.route("/", methods=['POST', 'GET'])
 def main():
     return index
-
+@app.route('/query', methods=['POST', 'GET'])
+def query():
+    query=request.form['query']
+    # Open the index.html to find the comment that has to be replaced with a script
+    f = open('templates/index.html')
+    index = f.read()
+    f.close()
+    exclude = set(string.punctuation)
+    if(query[0] != "#"):
+        print query
+        print query[0]
+        query = "#" + query
+        print query
+        
+    index = get_query_index(index,query)
+    return index
 
 if __name__ == "__main__":
     app.run()
