@@ -21,7 +21,7 @@ exclude = set(string.punctuation)
 
 
 # Generate the script that should replace the comment in index.html
-def generate_marker_js(lat, lng, query, message):
+def generate_marker_js(lat, lng, query, message,timestamp):
     # Every marker should have its unique id
     rand = random.randint(0, 100000)
     #Strip the messages from interpunction and line breaks (JS cannot handle most interpunctions)
@@ -29,7 +29,6 @@ def generate_marker_js(lat, lng, query, message):
     message = ''.join(ch for ch in message if ch not in exclude)
     query = query.replace('\n', ' ').replace('\r', '')
     message = message.replace('\n', ' ').replace('\r', '')
-
     return """ var contentString_%d = '<div id="content">'+
             '<div id="siteNotice">'+
             '</div>'+
@@ -48,45 +47,45 @@ def generate_marker_js(lat, lng, query, message):
             map: map,
             title: '%s'
             });
-            marker_%d.addListener('click', function() {
+            marker_%d.addListener('mouseover', function() {
             infowindow_%d.open(map, marker_%d);
-            });  """ % (rand, query, message, rand, rand, rand, lat, lng, query, rand, rand, rand) 
+            });
+
+            // hide infowindow
+            marker_%d.addListener('mouseout', function() {
+                infowindow_%d.close(map, marker_%d);;
+            });
+            timestampArray.push([new Date("%s"),"%s"]);
+            """ % (rand, query, message, rand, rand, rand, lat, lng, query, rand, rand, rand,rand,rand,rand,timestamp,message) 
 
 # Find the geo locations and messages from the tweets and send them to the client
-def place_markers(index, query='#MakeDonaldDrumpfAgain'):
+def place_markers(index, query='#SaySomethingGoodAboutTwitter'):
     tweets = twitter_framework.extract_tweets(query)
+    print tweets[0]
 
-    marker_scripts_list = [generate_marker_js(tweet['location'][0], tweet['location'][1], query, tweet['message']) for tweet in tweets if tweet['location'] != None]
+    marker_scripts_list = [generate_marker_js(tweet['location'][0], tweet['location'][1], query, tweet['message'],tweet['timestamp']) for tweet in tweets if tweet['location'] != None]
     marker_script = '\n'.join(marker_scripts_list)
 
     
-    timestamp_list = []
-    for tweet in tweets:
-        if tweet['location'] != None:
-            timestamp_list.append(tweet['timestamp'])
-    allstamps = ""
-    for timestamp in timestamp_list:
-        allstamps += 'timestampArray.push(new Date("'+timestamp+'"));'
+    #timestamp_list = []
+    #for tweet in tweets:
+    #    if tweet['location'] != None:
+    #        timestamp_list.append(tweet['timestamp'])
+    #allstamps = ""
+    #for timestamp in timestamp_list:
+    #    allstamps += 'timestampArray.push(new Date("'+timestamp+'"));'
     
     index = index.replace("// place_markers_here", marker_script)
-    index = index.replace("// place_scatterplot_here", allstamps)
+    #index = index.replace("// place_scatterplot_here", allstamps)
     
     return index
 
 index = place_markers(index)
 
 # Start server
-@app.route("/")
+@app.route("/", methods=['POST', 'GET'])
 def main():
-
     return index
-
-@app.route('/', methods=['POST'])
-def my_form_post():
-
-    text = request.form['text']
-    processed_text = text.upper()
-    return processed_text
 
 
 if __name__ == "__main__":
