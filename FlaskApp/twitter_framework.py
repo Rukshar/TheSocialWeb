@@ -25,7 +25,6 @@ def get_geo_location(user_location):
 	try:
 		location = geolocator.geocode(user_location)
 		if location != None:
-			# print location.address.encode('utf-8')
 			return (location.latitude, location.longitude)
 	except:
 		return None

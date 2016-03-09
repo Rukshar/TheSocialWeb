@@ -53,9 +53,8 @@ def generate_marker_js(lat, lng, query, message):
             }); """ % (rand, query, message, rand, rand, rand, lat, lng, query, rand, rand, rand) 
 
 # Find the geo locations and messages from the tweets and send them to the client
-def place_markers(index, query='#SaySomethingGoodAboutTwitter'):
+def place_markers(index, query='#MakeDonaldDrumpfAgain'):
     tweets = twitter_framework.extract_tweets(query)
-    print tweets[0]
 
     marker_scripts_list = [generate_marker_js(tweet['location'][0], tweet['location'][1], query, tweet['message']) for tweet in tweets if tweet['location'] != None]
     marker_script = '\n'.join(marker_scripts_list)
@@ -66,9 +65,17 @@ def place_markers(index, query='#SaySomethingGoodAboutTwitter'):
 index = place_markers(index)
 
 # Start server
-@app.route("/", methods=['POST', 'GET'])
+@app.route("/")
 def main():
+
     return index
+
+@app.route('/', methods=['POST'])
+def my_form_post():
+
+    text = request.form['text']
+    processed_text = text.upper()
+    return processed_text
 
 
 if __name__ == "__main__":
