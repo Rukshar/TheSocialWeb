@@ -2,7 +2,7 @@
 <html lang="en">
  
 <head><meta charset="UTF-8">
-    <title>Comparing popularity in Tweets</title>
+    <title>Visualizing popularity in Tweets</title>
  
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
  
@@ -44,10 +44,10 @@
 	.d3-tip {
   line-height: 1;
   font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
+  padding: 12px; 
+  border-radius: 8px; 
+  background: rgba(0, 0, 0, 0.7);
   color: #fff;
-  border-radius: 2px;
   pointer-events: none;
 }
 
@@ -71,6 +71,18 @@
   text-align: center;
 }
 
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #FF8C00;
+  fill: #FF8C00;
+}
+
 		</style>
 </head>
  
@@ -78,7 +90,8 @@
  
     <div class="mapcontainer">
         <div class="header">
-            <h1><center> Comparing popularity in tweets on the same news subject in different countries </center></h1>
+            <h1><center> Visualizing popularity in Tweets </center></h1>
+            <h2><center> Avalanches on a specific subject </center></h2>
         </div>
  <form method="post" action="query"><label for="query">Please enter a query:</label><input type="text" name="query" /><input type="submit" />
  
@@ -141,7 +154,7 @@
 
             var y = d3.scale.linear()
                       .domain([0, d3.max(ydata)*2])
-                      .range([ height, 0 ]);
+                      .range([ 0, height ]);
 
             // the chart object, includes all margins
             var chart = d3.select('#SVGdiv')
@@ -166,7 +179,13 @@
             main.append('g')
             .attr('transform', 'translate(0,' + height + ')')
             .attr('class', 'main axis date')
-            .call(xAxis);
+            .call(xAxis).selectAll("text")
+            .attr("y", 0)
+            .attr("x", 9)
+            .attr("dy", ".35em")
+            .attr("transform", "rotate(90)")
+            .style("text-anchor", "start");
+
 
             // draw the y axis
             var yAxis = d3.svg.axis().tickFormat(function (d) { return ''; })
@@ -177,14 +196,14 @@
     var tip = d3.tip()
         .attr('class', 'd3-tip')
         .offset([-10, 0])
-        .html(function(d,i) { return "<strong>Message:</strong> " + orderedDates[i][1] + "<br/><strong>Time:</strong> "+ xdata[i]; });
+        .html(function(d,i) { return "<strong>Location:</strong> " + orderedDates[i][1] + "<br/><strong>Time:</strong> "+ xdata[i]; });
 		
     chart.call(tip);
 	
-            main.append('g')
-            .attr('transform', 'translate(0,0)')
-            .attr('class', 'main axis date')
-            .call(yAxis);
+            // main.append('g')
+            // .attr('transform', 'translate(0,6)')
+            // .attr('class', 'main axis date')
+            // .call(yAxis);
 
             // draw the graph object
             var g = main.append("svg:g"); 
@@ -194,7 +213,8 @@
               .enter().append("svg:circle")  // create a new circle for each value
           .attr("cy", function (d) { return y(d); } ) // translate y value to a pixel
           .attr("cx", function (d,i) { return x(xdata[i]); } ) // translate x value
-          .attr("r", 8) // radius of circle
+          .attr("r", 4) // radius of circle
+          .attr("class", "dot")
           .style("opacity", 0.5) // opacity of circle
 			.on('mouseover', tip.show)
 			.on('mouseout', tip.hide)
