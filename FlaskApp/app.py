@@ -93,6 +93,7 @@ def get_query_index(index, query = "#SaySomethingGoodAboutTwitter"):
 @app.route("/", methods=['POST', 'GET'])
 def main():
     return index
+
 @app.route('/query', methods=['POST', 'GET'])
 def query():
     query=request.form['query']
