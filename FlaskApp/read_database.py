@@ -7,9 +7,6 @@ def stringtupletotuple(s):
 	l = s.split(", ")
 	return tuple([float(x) for x in l])
 
-
-# print stringtupletotuple("(3.3242, 3.234)")
-
 def read_data():
 	database = None
 
@@ -29,3 +26,4 @@ def read_data():
 
 	return database
 
+read_data()
