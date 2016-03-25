@@ -5,7 +5,7 @@ For the application to work, you need the folder FlaskApp.
 
 Two types of applications:
 
-Run the read_database.py to see the visualizations on the dataset we retrieved on our own
+Run the app_database.py to see the visualizations on the dataset we retrieved on our own
 
 Run the app.py to enter queries yourself and to see the visualizations.
 
