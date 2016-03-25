@@ -1,12 +1,14 @@
 # TheSocialWeb
 Final application developed for the course the social web
 
-For more information about Flask visit:
-http://flask.pocoo.org/docs/0.10/quickstart/
+For the application to work, you need the folder FlaskApp. 
 
-For an introduction on virtual environments visit:
-http://docs.python-guide.org/en/latest/dev/virtualenvs/  and  
-http://www.sitepoint.com/virtual-environments-python-made-easy/
+Two types of applications:
+
+Run the read_database.py to see the visualizations on the dataset we retrieved on our own
+
+Run the app.py to enter queries yourself and to see the visualizations.
+
+After running those (those are the server) go to localhost:5000 to view the page
 
 
-You need the whole folder for the website to work, or at least the templates folder and the app.py in the same folder, because app.py searches for the template folder to render the index.html
